@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="120" viewBox="0 0 520 120" role="img" aria-labelledby="title">
+  <title id="title">TrialTask — Text Logo</title>
+  <defs>
+    <linearGradient id="gradTT" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="50%" stop-color="#5B9DFF"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Optional leading mark (small icon) -->
+  <g transform="translate(10,10)">
+    <rect x="0" y="0" width="100" height="100" rx="22" fill="url(#gradTT)" filter="url(#softShadow)"/>
+    <path d="M28 54 l18 18 38 -38" fill="none" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- spark -->
+    <g transform="translate(78,28)">
+      <line x1="0" y1="-8" x2="0" y2="8" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+      <line x1="-8" y1="0" x2="8" y2="0" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+      <g transform="rotate(45)">
+        <line x1="0" y1="-6" x2="0" y2="6" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="-6" y1="0" x2="6" y2="0" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Brand text -->
+  <text x="130" y="78"
+        font-family="Inter, ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, Apple Color Emoji, Segoe UI Emoji"
+        font-size="64" font-weight="800" letter-spacing="0.5"
+        fill="url(#gradTT)">
+    TrialTask
+  </text>
+</svg>
