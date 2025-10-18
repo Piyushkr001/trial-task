@@ -31,21 +31,49 @@ type NavItem = { label: string; href: string };
 const NAV: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "Features", href: "/features" },
-  { label: "Dashboard", href: "/dashboard" },
   { label: "Docs", href: "/docs" },
   { label: "Contact", href: "/contact" },
 ];
 
-function NavLink({ item, activePath }: { item: NavItem; activePath: string }) {
+function NavLink({
+  item,
+  activePath,
+}: {
+  item: NavItem;
+  activePath: string;
+}) {
   const isActive =
     item.href === "/"
       ? activePath === "/"
       : activePath.startsWith(item.href) && item.href !== "/";
+
+  const isDashboard = item.href === "/dashboard";
+  const isDashboardActive =
+    isDashboard && (activePath === "/dashboard" || activePath.startsWith("/dashboard"));
+
+  // If this is the Dashboard link and we're already on /dashboard*, render a disabled pill
+  if (isDashboardActive) {
+    return (
+      <span
+        aria-current="page"
+        aria-disabled="true"
+        className={[
+          "rounded-md px-2.5 py-2 text-sm font-medium sm:px-3",
+          "bg-accent text-accent-foreground",
+          "cursor-not-allowed opacity-60 pointer-events-none",
+        ].join(" ")}
+      >
+        {item.label}
+      </span>
+    );
+  }
+
+  // Normal link
   return (
     <Link
       href={item.href}
+      aria-current={isActive ? "page" : undefined}
       className={[
-        // tighter default, a bit more room on larger screens
         "rounded-md px-2.5 py-2 text-sm font-medium transition-colors sm:px-3",
         "hover:bg-accent hover:text-accent-foreground",
         isActive ? "bg-accent text-accent-foreground" : "text-foreground/80",
@@ -61,7 +89,7 @@ export default function SiteNavbar() {
   const { isSignedIn, user } = useUser();
   const didSync = React.useRef(false);
 
-  // One-time user sync after sign-in (keep if you use /api/me or /api/users)
+  // One-time user sync after sign-in
   React.useEffect(() => {
     if (!isSignedIn || !user || didSync.current) return;
     didSync.current = true;
@@ -80,6 +108,8 @@ export default function SiteNavbar() {
       })
       .catch((err) => console.error("User upsert failed", err));
   }, [isSignedIn, user?.id]);
+
+  const onDashboard = pathname === "/dashboard" || pathname.startsWith("/dashboard");
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -117,9 +147,16 @@ export default function SiteNavbar() {
           </SignedOut>
           <SignedIn>
             <UserButton afterSignOutUrl="/" />
-            <Button asChild className="px-4">
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
+            {/* Disable the Dashboard button if we're already on dashboard */}
+            {onDashboard ? (
+              <Button disabled aria-disabled className="px-4 cursor-not-allowed opacity-60">
+                Dashboard
+              </Button>
+            ) : (
+              <Button asChild className="px-4">
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+            )}
           </SignedIn>
         </div>
 
@@ -153,22 +190,44 @@ export default function SiteNavbar() {
 
               {/* Drawer nav */}
               <div className="flex flex-col gap-1.5 p-2">
-                {NAV.map((it) => (
-                  <Link
-                    key={it.href}
-                    href={it.href}
-                    className={[
-                      "rounded-md px-3 py-2.5 text-sm font-medium",
-                      pathname.startsWith(it.href) && it.href !== "/"
-                        ? "bg-accent text-accent-foreground"
-                        : it.href === "/" && pathname === "/"
-                        ? "bg-accent text-accent-foreground"
-                        : "text-foreground/80 hover:bg-accent hover:text-accent-foreground",
-                    ].join(" ")}
-                  >
-                    {it.label}
-                  </Link>
-                ))}
+                {NAV.map((it) => {
+                  const isActive =
+                    it.href === "/"
+                      ? pathname === "/"
+                      : pathname.startsWith(it.href) && it.href !== "/";
+                  const isDashboard = it.href === "/dashboard";
+                  const isDashboardActive =
+                    isDashboard && (pathname === "/dashboard" || pathname.startsWith("/dashboard"));
+
+                  if (isDashboardActive) {
+                    return (
+                      <span
+                        key={it.href}
+                        aria-current="page"
+                        aria-disabled="true"
+                        className="rounded-md px-3 py-2.5 text-sm font-medium bg-accent text-accent-foreground cursor-not-allowed opacity-60 pointer-events-none"
+                      >
+                        {it.label}
+                      </span>
+                    );
+                  }
+
+                  return (
+                    <Link
+                      key={it.href}
+                      href={it.href}
+                      aria-current={isActive ? "page" : undefined}
+                      className={[
+                        "rounded-md px-3 py-2.5 text-sm font-medium",
+                        isActive
+                          ? "bg-accent text-accent-foreground"
+                          : "text-foreground/80 hover:bg-accent hover:text-accent-foreground",
+                      ].join(" ")}
+                    >
+                      {it.label}
+                    </Link>
+                  );
+                })}
               </div>
 
               <Separator className="my-2" />
@@ -186,9 +245,15 @@ export default function SiteNavbar() {
                 </SignedOut>
                 <SignedIn>
                   <UserButton afterSignOutUrl="/" />
-                  <Button asChild className="flex-1">
-                    <Link href="/dashboard">Dashboard</Link>
-                  </Button>
+                  {onDashboard ? (
+                    <Button className="flex-1 cursor-not-allowed opacity-60" disabled aria-disabled>
+                      Dashboard
+                    </Button>
+                  ) : (
+                    <Button asChild className="flex-1">
+                      <Link href="/dashboard">Dashboard</Link>
+                    </Button>
+                  )}
                 </SignedIn>
               </div>
             </SheetContent>
