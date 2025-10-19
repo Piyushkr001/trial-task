@@ -1,15 +1,27 @@
-import React from 'react'
+// app/dashboard/layout.tsx
+"use client";
 
-function DashboardLayout({
+import * as React from "react";
+import { DashboardSidebar } from "./_components/Sidebar";
+
+export default function DashboardLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div>
-        {children}
-    </div>
-  )
-}
+    <div className="flex min-h-[100dvh]">
+      {/* Desktop sidebar */}
+      <aside
+        className="hidden w-64 shrink-0 border-r md:block"
+        role="complementary"
+        aria-label="Dashboard sidebar"
+      >
+        <DashboardSidebar />
+      </aside>
 
-export default DashboardLayout
+      {/* Main content */}
+      <div className="flex min-w-0 flex-1 flex-col">
+        {children}
+      </div>
+    </div>
+  );
+}

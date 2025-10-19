@@ -65,8 +65,7 @@ export default function SiteFooter() {
             <div className="flex flex-col gap-3">
               <h4 className="text-sm font-semibold">Product</h4>
               <Link href="/features" className="text-sm text-muted-foreground hover:text-foreground">Features</Link>
-              <Link href="/templates" className="text-sm text-muted-foreground hover:text-foreground">Templates</Link>
-              <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground">Pricing</Link>
+              <Link href="/dashboard/templates" className="text-sm text-muted-foreground hover:text-foreground">Templates</Link>
               <Link href="/changelog" className="text-sm text-muted-foreground hover:text-foreground">Changelog</Link>
             </div>
 
@@ -75,13 +74,11 @@ export default function SiteFooter() {
               <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground">Docs</Link>
               <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground">Blog</Link>
               <Link href="/guides" className="text-sm text-muted-foreground hover:text-foreground">Guides</Link>
-              <Link href="/support" className="text-sm text-muted-foreground hover:text-foreground">Support</Link>
             </div>
 
             <div className="col-span-2 flex flex-col gap-3 sm:col-span-1">
               <h4 className="text-sm font-semibold">Company</h4>
               <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground">About</Link>
-              <Link href="/careers" className="text-sm text-muted-foreground hover:text-foreground">Careers</Link>
               <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground">Contact</Link>
               <Link href="/press" className="text-sm text-muted-foreground hover:text-foreground">Press Kit</Link>
             </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -9,6 +8,7 @@ import {
   LayoutTemplate,
   Settings,
   User2,
+  CheckCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@clerk/nextjs";
@@ -18,9 +18,9 @@ type Item = { label: string; href: string; icon: React.ElementType };
 const NAV: Item[] = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { label: "Resumes", href: "/dashboard/resumes", icon: FileText },
-  { label: "Templates", href: "/templates", icon: LayoutTemplate },
-  { label: "Profile", href: "/dashboard/profile", icon: User2 },
-  { label: "Settings", href: "/dashboard/settings", icon: Settings },
+  { label: "Templates", href: "/dashboard/templates", icon: LayoutTemplate },
+  { label: "Check ATS Score", href: "/dashboard/ats-score", icon: CheckCircle},
+  { label: "Manage Profile", href: "/dashboard/profile", icon: User2 },
 ];
 
 export function DashboardSidebar({ onNav }: { onNav?: () => void }) {
@@ -64,7 +64,7 @@ export function DashboardSidebar({ onNav }: { onNav?: () => void }) {
       {/* CTA */}
       <div className="border-t p-3">
         <Button asChild className="w-full">
-          <Link href="/get-started">Create New Resume</Link>
+          <Link href="/dashboard">Create New Resume</Link>
         </Button>
       </div>
     </aside>
