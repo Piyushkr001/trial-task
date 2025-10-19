@@ -363,7 +363,7 @@ export default function LandingPage() {
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Button asChild size="lg" className="gap-2">
-                <Link href="/get-started">
+                <Link href="/dashboard">
                   Get Started <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -577,7 +577,7 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-3">
             <Button asChild size="lg" className="gap-2">
-              <Link href="/get-started">
+              <Link href="/dashboard">
                 Get Started <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>

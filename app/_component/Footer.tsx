@@ -81,7 +81,6 @@ export default function SiteFooter() {
             <div className="col-span-2 flex flex-col gap-3 sm:col-span-1">
               <h4 className="text-sm font-semibold">Company</h4>
               <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground">About</Link>
-              <Link href="/careers" className="text-sm text-muted-foreground hover:text-foreground">Careers</Link>
               <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground">Contact</Link>
               <Link href="/press" className="text-sm text-muted-foreground hover:text-foreground">Press Kit</Link>
             </div>

@@ -20,8 +20,7 @@ const NAV: Item[] = [
   { label: "Resumes", href: "/dashboard/resumes", icon: FileText },
   { label: "Templates", href: "/dashboard/templates", icon: LayoutTemplate },
   { label: "Check ATS Score", href: "/dashboard/ats-score", icon: CheckCircle},
-  { label: "Profile", href: "/dashboard/profile", icon: User2 },
-  { label: "Settings", href: "/dashboard/settings", icon: Settings },
+  { label: "Manage Profile", href: "/dashboard/profile", icon: User2 },
 ];
 
 export function DashboardSidebar({ onNav }: { onNav?: () => void }) {
