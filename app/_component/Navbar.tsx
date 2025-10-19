@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { Menu } from "lucide-react";
 
@@ -47,28 +47,6 @@ function NavLink({
       ? activePath === "/"
       : activePath.startsWith(item.href) && item.href !== "/";
 
-  const isDashboard = item.href === "/dashboard";
-  const isDashboardActive =
-    isDashboard && (activePath === "/dashboard" || activePath.startsWith("/dashboard"));
-
-  // If this is the Dashboard link and we're already on /dashboard*, render a disabled pill
-  if (isDashboardActive) {
-    return (
-      <span
-        aria-current="page"
-        aria-disabled="true"
-        className={[
-          "rounded-md px-2.5 py-2 text-sm font-medium sm:px-3",
-          "bg-accent text-accent-foreground",
-          "cursor-not-allowed opacity-60 pointer-events-none",
-        ].join(" ")}
-      >
-        {item.label}
-      </span>
-    );
-  }
-
-  // Normal link
   return (
     <Link
       href={item.href}
@@ -85,20 +63,55 @@ function NavLink({
 }
 
 export default function SiteNavbar() {
+  const router = useRouter();
   const pathname = usePathname();
-  const { isSignedIn, user } = useUser();
-  const didSync = React.useRef(false);
+  const { isLoaded, isSignedIn, user } = useUser();
 
-  // One-time user sync after sign-in
+  const didSync = React.useRef(false);
+  const prevSignedIn = React.useRef<boolean | null>(null);
+
+  // ✅ Redirect only on real auth transitions, after Clerk is loaded.
   React.useEffect(() => {
-    if (!isSignedIn || !user || didSync.current) return;
+    if (!isLoaded) return; // wait for Clerk hydration
+
+    const was = prevSignedIn.current;
+    const now = !!isSignedIn;
+
+    // first stable load: record state, don't redirect
+    if (was === null) {
+      prevSignedIn.current = now;
+      return;
+    }
+
+    // signed out -> signed in: redirect only from entry/auth pages
+    if (!was && now) {
+      const fromEntryPage = pathname === "/" || pathname === "/login" || pathname === "/sign-up";
+      if (fromEntryPage && !pathname.startsWith("/dashboard")) {
+        router.replace("/dashboard");
+      }
+    }
+
+    // signed in -> signed out: if on a protected page, send home
+    if (was && !now) {
+      if (pathname.startsWith("/dashboard")) {
+        router.replace("/");
+      }
+    }
+
+    prevSignedIn.current = now;
+  }, [isLoaded, isSignedIn, pathname, router]);
+
+  // ✅ One-time user sync after sign-in (guarded by isLoaded & didSync)
+  React.useEffect(() => {
+    if (!isLoaded || !isSignedIn || !user || didSync.current) return;
     didSync.current = true;
 
+    // lightweight "me" ping (ignore failures)
     api.post("/api/me").catch((err) => console.error("User sync failed", err));
 
     const email =
-      user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId)
-        ?.emailAddress ?? user.emailAddresses[0]?.emailAddress;
+      user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId)?.emailAddress ??
+      user.emailAddresses[0]?.emailAddress;
 
     api
       .post("/api/users", {
@@ -107,13 +120,12 @@ export default function SiteNavbar() {
         imageUrl: user.imageUrl,
       })
       .catch((err) => console.error("User upsert failed", err));
-  }, [isSignedIn, user?.id]);
+  }, [isLoaded, isSignedIn, user?.id]); // user?.id is stable per account
 
   const onDashboard = pathname === "/dashboard" || pathname.startsWith("/dashboard");
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      {/* wider responsive gutters */}
       <div className="mx-auto flex h-14 items-center justify-between gap-2 px-4 sm:h-16 sm:gap-3 sm:px-6 lg:max-w-7xl lg:px-8">
         {/* Left: Brand */}
         <Link href="/" className="flex shrink-0 items-center gap-2">
@@ -137,17 +149,19 @@ export default function SiteNavbar() {
         {/* Right: Actions (Desktop) */}
         <div className="hidden items-center gap-1.5 sm:gap-2 md:flex">
           <ModeToggle />
+
           <SignedOut>
-            <Button variant="ghost" asChild className="px-3">
-              <Link href="/login">Log in</Link>
+            {/* navigate with router to custom auth pages */}
+            <Button className="px-3" variant="ghost" onClick={() => router.push("/login")}>
+              Log in
             </Button>
-            <Button asChild className="px-4">
-              <Link href="/sign-up">Get Started</Link>
+            <Button className="px-4" onClick={() => router.push("/sign-up")}>
+              Get Started
             </Button>
           </SignedOut>
+
           <SignedIn>
             <UserButton afterSignOutUrl="/" />
-            {/* Disable the Dashboard button if we're already on dashboard */}
             {onDashboard ? (
               <Button disabled aria-disabled className="px-4 cursor-not-allowed opacity-60">
                 Dashboard
@@ -160,7 +174,7 @@ export default function SiteNavbar() {
           </SignedIn>
         </div>
 
-        {/* Mobile: Menu button */}
+        {/* Mobile: Menu */}
         <div className="md:hidden">
           <Sheet>
             <SheetTrigger asChild>
@@ -169,7 +183,6 @@ export default function SiteNavbar() {
               </Button>
             </SheetTrigger>
 
-            {/* narrower on small screens, caps at 24rem */}
             <SheetContent side="left" className="w-[85vw] max-w-sm p-0">
               <SheetHeader className="sr-only">
                 <SheetTitle>Navigation Menu</SheetTitle>
@@ -195,23 +208,6 @@ export default function SiteNavbar() {
                     it.href === "/"
                       ? pathname === "/"
                       : pathname.startsWith(it.href) && it.href !== "/";
-                  const isDashboard = it.href === "/dashboard";
-                  const isDashboardActive =
-                    isDashboard && (pathname === "/dashboard" || pathname.startsWith("/dashboard"));
-
-                  if (isDashboardActive) {
-                    return (
-                      <span
-                        key={it.href}
-                        aria-current="page"
-                        aria-disabled="true"
-                        className="rounded-md px-3 py-2.5 text-sm font-medium bg-accent text-accent-foreground cursor-not-allowed opacity-60 pointer-events-none"
-                      >
-                        {it.label}
-                      </span>
-                    );
-                  }
-
                   return (
                     <Link
                       key={it.href}
@@ -235,14 +231,16 @@ export default function SiteNavbar() {
               {/* Drawer actions */}
               <div className="flex items-center gap-2 p-3">
                 <ModeToggle />
+
                 <SignedOut>
-                  <Button variant="ghost" asChild className="flex-1">
-                    <Link href="/login">Log in</Link>
+                  <Button variant="ghost" className="flex-1" onClick={() => router.push("/login")}>
+                    Log in
                   </Button>
-                  <Button asChild className="flex-1">
-                    <Link href="/sign-up">Get Started</Link>
+                  <Button className="flex-1" onClick={() => router.push("/sign-up")}>
+                    Get Started
                   </Button>
                 </SignedOut>
+
                 <SignedIn>
                   <UserButton afterSignOutUrl="/" />
                   {onDashboard ? (
@@ -250,8 +248,8 @@ export default function SiteNavbar() {
                       Dashboard
                     </Button>
                   ) : (
-                    <Button asChild className="flex-1">
-                      <Link href="/dashboard">Dashboard</Link>
+                    <Button className="flex-1" onClick={() => router.push("/dashboard")}>
+                      Dashboard
                     </Button>
                   )}
                 </SignedIn>

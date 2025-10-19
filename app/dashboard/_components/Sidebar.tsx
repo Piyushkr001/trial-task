@@ -18,8 +18,8 @@ type Item = { label: string; href: string; icon: React.ElementType };
 const NAV: Item[] = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { label: "Resumes", href: "/dashboard/resumes", icon: FileText },
-  { label: "Templates", href: "/templates", icon: LayoutTemplate },
-  { label: "Check ATS Score", href: "/ats-score", icon: CheckCircle},
+  { label: "Templates", href: "/dashboard/templates", icon: LayoutTemplate },
+  { label: "Check ATS Score", href: "/dashboard/ats-score", icon: CheckCircle},
   { label: "Profile", href: "/dashboard/profile", icon: User2 },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
@@ -65,7 +65,7 @@ export function DashboardSidebar({ onNav }: { onNav?: () => void }) {
       {/* CTA */}
       <div className="border-t p-3">
         <Button asChild className="w-full">
-          <Link href="/get-started">Create New Resume</Link>
+          <Link href="/dashboard">Create New Resume</Link>
         </Button>
       </div>
     </aside>
