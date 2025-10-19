@@ -11,8 +11,10 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LayoutTemplate, MoreHorizontal, FileText, Download } from "lucide-react";
+import { LayoutTemplate, MoreHorizontal, FileText, Download, Eye } from "lucide-react";
 import { Resume } from "./types";
+
+const BASE = "/dashboard/resumes";
 
 function formatWhen(iso: string) {
   const d = new Date(iso);
@@ -28,11 +30,10 @@ const isImageUrl = (url?: string | null) =>
   !!url && /\.(png|jpe?g|webp|gif|bmp|svg)$/i.test(url);
 
 function Preview({ r }: { r: Resume }) {
-  const BASE = "/dashboard/resumes";
-
+  // If you’ve stored a generated image preview, show it.
   if (isImageUrl(r.previewUrl)) {
+    // eslint-disable-next-line @next/next/no-img-element
     return (
-      // eslint-disable-next-line @next/next/no-img-element
       <img
         src={r.previewUrl!}
         alt={`${r.title} preview`}
@@ -42,23 +43,19 @@ function Preview({ r }: { r: Resume }) {
     );
   }
 
-  // Fallback: inline PDF preview using your export API
-  // Works even when there's no previewUrl image available.
+  // Fallback: inline PDF (server export)
   return (
-    <div className="relative h-full w-full">
-      <iframe
-        title={`${r.title} preview`}
-        src={`/api/resumes/${r.id}/export#toolbar=0&navpanes=0&scrollbar=0`}
-        className="h-full w-full"
-        loading="lazy"
-      />
-    </div>
+    <iframe
+      title={`${r.title} preview`}
+      src={`/api/resumes/${r.id}/export#toolbar=0&navpanes=0&scrollbar=0`}
+      className="h-full w-full"
+      loading="lazy"
+    />
   );
 }
 
 export default function ResumeCard({ resume }: { resume: Resume }) {
   const r = resume;
-  const BASE = "/dashboard/resumes";
   const [dupLoading, setDupLoading] = React.useState(false);
 
   async function handleDuplicate() {
@@ -87,19 +84,25 @@ export default function ResumeCard({ resume }: { resume: Resume }) {
       </CardHeader>
 
       <CardContent className="flex flex-1 flex-col gap-3">
-        <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-md border bg-muted/30">
-          {r.previewUrl || true ? (
-            <Preview r={r} />
-          ) : (
-            <div className="flex flex-col items-center text-muted-foreground">
-              <LayoutTemplate className="mb-2 h-6 w-6" />
-              <span className="text-xs">No preview</span>
-            </div>
-          )}
+        {/* Preview area with hover overlay → Preview page */}
+        <div className="group relative aspect-[4/3] overflow-hidden rounded-md border bg-muted/30">
+          <Preview r={r} />
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-opacity group-hover:bg-black/10 group-hover:opacity-100">
+            <Button asChild size="sm" className="pointer-events-auto">
+              <Link href={`${BASE}/${r.id}/preview`}>
+                <LayoutTemplate className="mr-2 h-4 w-4" /> Open Preview
+              </Link>
+            </Button>
+          </div>
         </div>
 
         <div className="mt-auto flex items-center justify-between">
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" asChild>
+              <Link href={`${BASE}/${r.id}/preview`}>
+                <Eye className="mr-2 h-4 w-4" /> Preview
+              </Link>
+            </Button>
             <Button size="sm" variant="outline" asChild>
               <Link href={`${BASE}/${r.id}/edit`}>
                 <FileText className="mr-2 h-4 w-4" /> Edit
@@ -118,11 +121,13 @@ export default function ResumeCard({ resume }: { resume: Resume }) {
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-44">
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem asChild>
+                <Link href={`${BASE}/${r.id}/preview`}>Preview</Link>
+              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href={`${BASE}/${r.id}`}>View</Link>
               </DropdownMenuItem>
-
               <DropdownMenuItem
                 onSelect={(e) => {
                   e.preventDefault();
@@ -131,7 +136,6 @@ export default function ResumeCard({ resume }: { resume: Resume }) {
               >
                 {dupLoading ? "Duplicating..." : "Duplicate"}
               </DropdownMenuItem>
-
               <DropdownMenuItem asChild>
                 <Link href={`${BASE}/${r.id}/ai`}>AI Suggestions</Link>
               </DropdownMenuItem>
