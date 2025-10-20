@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
     const suggestions = await generateSuggestions({
       title: row.title,
-      template: row.template,
+      template: row.template as "classic" | "modern" | "compact",
       notes: parsed.data.notes,
     });
 
