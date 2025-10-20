@@ -234,7 +234,7 @@ export default function DashboardPage() {
                 <div className="max-w-[50ch] text-sm text-muted-foreground">
                   Let AI craft your professional summary & bullet points from your raw notes.
                 </div>
-                <Button variant="secondary" className="gap-2" onClick={() => router.push("/dashboard/ai-summary")}>
+                <Button variant="secondary" className="gap-2" onClick={() => router.push("/dashboard/resumes")}>
                   <Wand2 className="h-4 w-4" />
                   Generate AI Summary
                 </Button>
