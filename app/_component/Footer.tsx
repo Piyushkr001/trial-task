@@ -72,7 +72,7 @@ export default function SiteFooter() {
             <div className="flex flex-col gap-3">
               <h4 className="text-sm font-semibold">Resources</h4>
               <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground">Docs</Link>
-              <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground">Blog</Link>
+              <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground">Privacy Policy</Link>
               <Link href="/guides" className="text-sm text-muted-foreground hover:text-foreground">Guides</Link>
             </div>
 
@@ -80,23 +80,8 @@ export default function SiteFooter() {
               <h4 className="text-sm font-semibold">Company</h4>
               <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground">About</Link>
               <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground">Contact</Link>
-              <Link href="/press" className="text-sm text-muted-foreground hover:text-foreground">Press Kit</Link>
+              <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">Terms</Link>
             </div>
-          </div>
-
-          {/* Newsletter */}
-          <div className="md:w-[340px]">
-            <h4 className="text-sm font-semibold">Stay in the loop</h4>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Get product news, template drops, and tips—no spam.
-            </p>
-            <form className="mt-3 flex items-center gap-2" onSubmit={onSubscribe}>
-              <label htmlFor="newsletter" className="sr-only">Email address</label>
-              <Input id="newsletter" name="email" type="email" placeholder="you@domain.com" className="flex-1" required />
-              <Button type="submit" className="gap-1">
-                Subscribe <ArrowRight className="h-4 w-4" />
-              </Button>
-            </form>
           </div>
         </div>
 
