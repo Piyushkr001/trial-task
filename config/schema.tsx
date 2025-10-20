@@ -39,7 +39,20 @@ export const users = pgTable(
 );
 
 /* -------------------- enums -------------------- */
-export const resumeTemplateEnum = pgEnum("resume_template", ["classic", "modern", "compact"]);
+// enums
+export const resumeTemplateEnum = pgEnum("resume_template", [
+  "classic",
+  "modern",
+  "compact",
+  "minimal",
+  "elegant",
+  "tech",
+  "creative",
+  "executive",
+  "timeline",
+  "twocol",
+]);
+
 export const credentialStatusEnum = pgEnum("credential_status", ["linked", "pending", "revoked"]);
 
 /* -------------------- resumes -------------------- */
