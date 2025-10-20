@@ -1,10 +1,12 @@
+// next.config.ts
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-   experimental: {
-    serverComponentsExternalPackages: ["pdfjs-dist", "jszip", "pdfkit"],
-  },
+  // ✅ Next 15+ replacement for experimental.serverComponentsExternalPackages
+  serverExternalPackages: ["pdfjs-dist", "jszip", "pdfkit"],
+
+  // (optional) keep or remove the experimental block if you have other flags
+  experimental: {},
 };
 
 export default nextConfig;
